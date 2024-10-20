@@ -1,9 +1,9 @@
 package banco;
-
 import java.util.Date;
-import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
+
+// Definición de la clase Main. Contiene el punto de entrada principal para la aplicación.
 public class Main {
     public static void main(String[] args) {
         Main programa = new Main();
@@ -43,7 +43,7 @@ public class Main {
 
     private void menu(Banco banco) {
         int opcion = 0;
-        while (opcion != 8) {
+        while (opcion != 8) { 
             try {
                 opcion = Integer.parseInt(JOptionPane.showInputDialog("MENU \n" +
                         "1. Crear Cliente \n" +
@@ -51,15 +51,15 @@ public class Main {
                         "3. Hacer Movimiento \n" +
                         "4. Mostrar Clientes \n" +
                         "5. Mostrar Historial de Movimientos \n" +
-                        "6. Eliminar Cliente \n" +
-                        "7. Eliminar Cuenta \n" +
+                        "6. Eliminar Cliente \n" + // Nueva opción
+                        "7. Eliminar Cuenta \n" +   // Nueva opción
                         "8. Salir \n" +
                         "Ingrese una opción:"));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Por favor ingrese un número válido.");
                 continue;
             }
-
+    
             switch (opcion) {
                 case 1:
                     crearCliente(banco);
@@ -77,10 +77,10 @@ public class Main {
                     mostrarHistorialMovimientos(banco);
                     break;
                 case 6:
-                    eliminarCliente(banco);
+                    eliminarCliente(banco); // Método para eliminar cliente
                     break;
                 case 7:
-                    eliminarCuenta(banco);
+                    eliminarCuenta(banco); // Método para eliminar cuenta
                     break;
                 case 8:
                     JOptionPane.showMessageDialog(null, "Saliendo del programa...");
@@ -91,7 +91,7 @@ public class Main {
             }
         }
     }
-
+    
     private void crearCliente(Banco banco) {
         try {
             Cliente cliente = new Cliente();
@@ -104,14 +104,14 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Error al crear el cliente: " + e.getMessage());
         }
     }
-
+    
     private void crearCuenta(Banco banco) {
         try {
             String clientes = obtenerListaClientes(banco);
             String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente para agregar una cuenta:\n" + clientes);
-
+    
             Cliente cliente = banco.getCliente(nombreCliente);
-
+    
             if (cliente != null) {
                 Cuenta cuenta = new Cuenta();
                 cuenta.setNodeCuenta(JOptionPane.showInputDialog("Ingrese el número de cuenta:"));
@@ -125,19 +125,19 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Error al crear la cuenta: " + e.getMessage());
         }
     }
-
+    
     private void mostrarHistorialMovimientos(Banco banco) {
         try {
             String clientes = obtenerListaClientes(banco);
             String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente:\n" + clientes);
-
+    
             Cliente cliente = banco.getCliente(nombreCliente);
-
+    
             if (cliente != null) {
                 String cuentas = obtenerListaCuentas(cliente);
                 String nodoCuenta = JOptionPane.showInputDialog("Seleccione una cuenta:\n" + cuentas);
                 Cuenta cuenta = cliente.getCuenta(nodoCuenta);
-
+    
                 if (cuenta != null) {
                     cuenta.mostrarHistorialMovimientos();
                 } else {
@@ -150,24 +150,24 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Error al mostrar historial: " + e.getMessage());
         }
     }
-
+    
     private void hacerMovimiento(Banco banco) {
         try {
             String clientes = obtenerListaClientes(banco);
             String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente:\n" + clientes);
             Cliente cliente = banco.getCliente(nombreCliente);
-
+    
             if (cliente != null) {
                 String cuentas = obtenerListaCuentas(cliente);
                 String nodoCuenta = JOptionPane.showInputDialog("Seleccione una cuenta:\n" + cuentas);
                 Cuenta cuenta = cliente.getCuenta(nodoCuenta);
-
+    
                 if (cuenta != null) {
                     int tipoMovimiento = Integer.parseInt(JOptionPane.showInputDialog("Seleccione tipo de movimiento: \n" +
                             "1. Transferencia \n" +
                             "2. Transacción \n" +
                             "3. Pago"));
-
+    
                     Movimiento movimiento = null;
                     switch (tipoMovimiento) {
                         case 1:
@@ -189,7 +189,7 @@ public class Main {
                             JOptionPane.showMessageDialog(null, "Opción inválida.");
                             return;
                     }
-
+    
                     movimiento.setReferencia(JOptionPane.showInputDialog("Ingrese la referencia:"));
                     movimiento.setFecha(new Date());
                     movimiento.setMonto(Double.parseDouble(JOptionPane.showInputDialog("Ingrese el monto:")));
@@ -209,14 +209,13 @@ public class Main {
     }
 
     private void mostrarClientes(Banco banco) {
-        // Usando streams y lambdas para crear una lista de clientes
-        String clientes = banco.getClientes()
-                .stream() // Inicia un flujo de clientes
-                .map(Cliente::toString) // Convierte cada cliente a su representación en cadena
-                .collect(Collectors.joining("\n")); // Une las cadenas en una sola, separadas por saltos de línea
-
-        if (!clientes.isEmpty()) {
-            JOptionPane.showMessageDialog(null, clientes);
+        StringBuilder sb = new StringBuilder();
+        for (Cliente cliente : banco.getClientes()) {
+            sb.append(cliente.toString()).append("\n");
+        }
+    
+        if (sb.length() > 0) {
+            JOptionPane.showMessageDialog(null, sb.toString());
         } else {
             JOptionPane.showMessageDialog(null, "No hay clientes registrados.");
         }
@@ -224,38 +223,38 @@ public class Main {
 
     private void eliminarCliente(Banco banco) {
         String clientes = obtenerListaClientes(banco);
+
         String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente a eliminar:\n" + clientes);
         banco.eliminarCliente(nombreCliente);
     }
 
     private void eliminarCuenta(Banco banco) {
-        // Usando streams y lambdas para crear una lista de nombres de clientes
-        String clientes = banco.getClientes()
-                .stream() // Inicia un flujo de clientes
-                .map(Cliente::getNombre) // Extrae el nombre de cada cliente
-                .collect(Collectors.joining("\n")); // Une los nombres en una sola cadena
-
-        String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente:\n" + clientes);
-        Cliente cliente = banco.getCliente(nombreCliente);
-
+        StringBuilder listaClientes = new StringBuilder();
+        for (Cliente cliente : banco.getClientes()) { // Suponiendo que el Banco tiene un método getClientes()
+            listaClientes.append(cliente.getNombre()).append("\n"); // Añade el nombre de cada cliente
+        }
+    
+        String nombreCliente = JOptionPane.showInputDialog("Seleccione un cliente:\n" + listaClientes.toString());
+        Cliente cliente = banco.getCliente(nombreCliente); // Busca al cliente seleccionado
+    
         if (cliente != null) {
-            // Usando streams y lambdas para crear una lista de números de cuentas
-            String cuentas = cliente.getCuentas()
-                    .stream() // Inicia un flujo de cuentas
-                    .map(Cuenta::getNodeCuenta) // Extrae el número de cuenta de cada cuenta
-                    .collect(Collectors.joining("\n")); // Une los números de cuenta en una sola cadena
-
-            if (!cuentas.isEmpty()) {
-                String nodoCuenta = JOptionPane.showInputDialog("Seleccione el número de cuenta a eliminar:\n" + cuentas);
-                cliente.eliminarCuenta(nodoCuenta);
+            // Obtiene la lista de cuentas del cliente
+            StringBuilder cuentas = new StringBuilder();
+            for (Cuenta cuenta : cliente.getCuentas()) {
+                cuentas.append(cuenta.getNodeCuenta()).append("\n"); // Construye la lista de cuentas
+            }
+    
+            // Si hay cuentas, se le pide al usuario que elija una para eliminar
+            if (cuentas.length() > 0) {
+                String nodoCuenta = JOptionPane.showInputDialog("Seleccione el número de cuenta a eliminar:\n" + cuentas.toString());
+                cliente.eliminarCuenta(nodoCuenta); // Elimina la cuenta
             } else {
                 JOptionPane.showMessageDialog(null, "El cliente no tiene cuentas asociadas.");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Cliente no encontrado.");
+            JOptionPane.showMessageDialog(null, "Cliente no encontrado."); // Cliente no existe
         }
     }
-
     private String obtenerListaClientes(Banco banco) {
         StringBuilder clientes = new StringBuilder();
         for (Cliente cliente : banco.getClientes()) {
@@ -263,13 +262,13 @@ public class Main {
         }
         return clientes.toString();
     }
-
+    
     // Método para obtener la lista de cuentas de un cliente
     private String obtenerListaCuentas(Cliente cliente) {
-        // Usando streams y lambdas para crear una lista de números de cuentas
-        return cliente.getCuentas()
-                .stream() // Inicia un flujo de cuentas
-                .map(Cuenta::getNodeCuenta) // Extrae el número de cuenta de cada cuenta
-                .collect(Collectors.joining("\n")); // Une los números de cuenta en una sola cadena
+        StringBuilder cuentas = new StringBuilder();
+        for (Cuenta cuenta : cliente.getCuentas()) {
+            cuentas.append(cuenta.getNodeCuenta()).append("\n");
+        }
+        return cuentas.toString();
     }
 }

@@ -1,73 +1,76 @@
 package banco;
 
-import java.util.*;
-import java.util.stream.Collectors;
+// Definición de la clase Cuenta.
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 public class Cuenta {
-    // Variables de instancia privadas
+    // Variable de instancia privada para almacenar el número de cuenta.
     private String nodeCuenta;
+    
+    // Variable de instancia privada para almacenar el saldo de la cuenta.
     private double saldo = 0.0;
+    
+    // Variable de instancia privada para almacenar el tipo de cuenta.
     private String tipoDeCuenta;
     
-    // HashMap para almacenar el historial de movimientos
+    // Usamos un HashMap para almacenar el historial de movimientos.
+    // La clave será un identificador único del movimiento (puede ser un número o ID de transacción).
     private HashMap<Integer, Movimiento> historialMovimientos = new HashMap<>();
     private int contadorMovimientos = 0; // Contador para asignar claves únicas a cada movimiento.
-
-    // Método para obtener el número de cuenta
+    
+    // Método público para obtener el valor del número de cuenta.
     public String getNodeCuenta() {
         return nodeCuenta;
     }
 
-    // Método para establecer el número de cuenta
+    // Método público para establecer un valor al número de cuenta.
     public void setNodeCuenta(String nodeCuenta) {
         this.nodeCuenta = nodeCuenta;
     }
 
-    // Método para obtener el saldo de la cuenta
+    // Método público para obtener el saldo de la cuenta.
     public double getSaldo() {
         return saldo;
     }
 
-    // Método para establecer el saldo de la cuenta
+    // Método público para establecer un valor al saldo de la cuenta.
     public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 
-    // Método para obtener el tipo de cuenta
+    // Método público para obtener el tipo de cuenta.
     public String getTipodeCuenta() {
         return tipoDeCuenta;
     }
 
-    // Método para establecer el tipo de cuenta
+    // Método público para establecer un valor al tipo de cuenta.
     public void setTipodeCuenta(String tipoDeCuenta) {
         this.tipoDeCuenta = tipoDeCuenta;
     }
 
-    // Método para agregar un movimiento al historial y actualizar el saldo usando lambda
+    // Método público para agregar un movimiento al historial. Actualiza el saldo.
     public void agregarMovimiento(Movimiento movimiento) {
         historialMovimientos.put(contadorMovimientos++, movimiento); // Agrega el movimiento al HashMap.
-        saldo -= Optional.ofNullable(movimiento)
-                         .map(Movimiento::getMonto)
-                         .orElse(0.0);  // Actualiza el saldo basado en el monto del movimiento.
+        saldo -= movimiento.getMonto(); // Actualiza el saldo basado en el monto del movimiento.
     }
 
-    // Método para mostrar el historial de movimientos usando lambda y stream
+    // Método público para mostrar el historial de movimientos.
     public void mostrarHistorialMovimientos() {
-        String movimientosString = historialMovimientos.values()
-                                                       .stream()
-                                                       .map(Movimiento::toString)
-                                                       .collect(Collectors.joining("\n"));
-
-        if (!movimientosString.isEmpty()) {
-            JOptionPane.showMessageDialog(null, movimientosString);
+        StringBuilder sb = new StringBuilder();
+    
+        // Iteramos sobre los movimientos almacenados en el HashMap.
+        historialMovimientos.values().forEach(movimiento -> sb.append(movimiento.toString()).append("\n"));
+    
+        if (!historialMovimientos.isEmpty()) {
+            JOptionPane.showMessageDialog(null, sb.toString());
         } else {
             JOptionPane.showMessageDialog(null, "No hay movimientos aún");
         }
     }
-
-    // Método para proporcionar una representación en cadena de la cuenta
+    
+    // Método público para proporcionar una representación en cadena de la cuenta.
     public String toString() {
-        return String.format("Cuenta: %s | Tipo: %s | Saldo: %.2f", nodeCuenta, tipoDeCuenta, saldo);
+        return "Cuenta: " + nodeCuenta + " | Tipo: " + tipoDeCuenta + " | Saldo: " + saldo;
     }
 }

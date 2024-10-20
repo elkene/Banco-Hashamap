@@ -1,93 +1,90 @@
 package banco;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 
+// Definición de la clase Cliente.
 public class Cliente {
     // Usamos un HashMap para almacenar las cuentas del cliente.
-    private final HashMap<String, Cuenta> cuentasMap = new HashMap<>();
+    // La clave es el número de cuenta (nodoCuenta), y el valor es el objeto Cuenta correspondiente.
+    private final HashMap<String, Cuenta> cuentasMap = new HashMap<>(); 
     
     // Variables de instancia privadas para almacenar la información personal del cliente.
     private String nombre;
     private String curp;
     private String celular;
     
-    // Método para agregar una cuenta al HashMap del cliente.
+    // Método público para agregar una cuenta al HashMap del cliente.
+    // En lugar de agregar la cuenta a una lista, la agregamos al HashMap usando el nodo de cuenta como clave.
     public void agregarCuenta(Cuenta cuenta) {
         cuentasMap.put(cuenta.getNodeCuenta(), cuenta);  // Agrega la cuenta al HashMap.
     }
 
-    // Método para obtener una cuenta por su número de cuenta usando lambda y stream.
+    // Método público para obtener una cuenta por su número de cuenta (nodoCuenta).
+    // Usamos el método `get` del HashMap, que busca la cuenta directamente con la clave (nodoCuenta).
     public Cuenta getCuenta(String nodoCuenta) {
-        return cuentasMap.entrySet()
-                         .stream()
-                         .filter(entry -> entry.getKey().equals(nodoCuenta))
-                         .map(Map.Entry::getValue)
-                         .findFirst()
-                         .orElse(null);  // Devuelve la cuenta o null si no existe en el HashMap.
+        return cuentasMap.get(nodoCuenta);  // Devuelve la cuenta o null si no existe en el HashMap.
     }
 
-    // Método para eliminar una cuenta por su número de cuenta usando lambda y stream.
+    // Método público para eliminar una cuenta por su número de cuenta (nodoCuenta).
     public void eliminarCuenta(String nodoCuenta) {
-        Optional.ofNullable(cuentasMap.remove(nodoCuenta))
-                .ifPresentOrElse(
-                    c -> JOptionPane.showMessageDialog(null, "Cuenta eliminada con éxito."),
-                    () -> JOptionPane.showMessageDialog(null, "Cuenta no encontrada.")
-                );
+        if (cuentasMap.containsKey(nodoCuenta)) {  // Verificamos si el HashMap contiene la cuenta.
+            cuentasMap.remove(nodoCuenta);  // Eliminamos la cuenta del HashMap.
+            JOptionPane.showMessageDialog(null, "Cuenta eliminada con éxito.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Cuenta no encontrada.");
+        }
     }
 
-    // Método para obtener el número de cuentas asociadas al cliente usando stream.
+    // Método público para obtener el número de cuentas asociadas al cliente.
+    // El tamaño del HashMap nos indica cuántas cuentas hay.
     public int getNumeroCuentas() {
-        return (int) cuentasMap.values()
-                               .stream()
-                               .count();  // El tamaño del HashMap.
+        return cuentasMap.size();
     }
 
-    // Método para obtener el nombre del cliente.
+    // Método público para obtener el nombre del cliente.
     public String getNombre() {
         return nombre;
     }
 
-    // Método para establecer el nombre del cliente.
+    // Método público para establecer un valor al nombre del cliente.
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    // Método para obtener la CURP del cliente.
+    // Método público para obtener la CURP del cliente.
     public String getCurp() {
         return curp;
     }
 
-    // Método para establecer la CURP del cliente.
+    // Método público para establecer un valor a la CURP del cliente.
     public void setCurp(String curp) {
         this.curp = curp;
     }
 
-    // Método para obtener el número de celular del cliente.
+    // Método público para obtener el número de celular del cliente.
     public String getCelular() {
         return celular;
     }
 
-    // Método para establecer el número de celular del cliente.
+    // Método público para establecer un valor al número de celular del cliente.
     public void setCelular(String celular) {
         this.celular = celular;
     }
-
-    // Método para obtener todas las cuentas del cliente usando stream.
-    public Collection<Cuenta> getCuentas() {
-        return cuentasMap.values()
-                         .stream()
-                         .collect(Collectors.toList());  // Devuelve las cuentas como una colección.
+  public Collection<Cuenta> getCuentas() {
+        return cuentasMap.values(); // Devuelve las cuentas como una colección.
     }
-
-    // Método para generar una representación en cadena del cliente y sus cuentas usando stream.
+    // Método público para proporcionar una representación en cadena del cliente y sus cuentas asociadas.
+    // Recorremos el HashMap de cuentas para construir la cadena de texto con la información de las cuentas.
     public String toString() {
-        String cuentasString = cuentasMap.values()
-                                         .stream()
-                                         .map(Cuenta::toString)
-                                         .collect(Collectors.joining("\n"));
+        StringBuilder sb = new StringBuilder();
+        sb.append("Cliente: ").append(nombre).append(" | CURP: ").append(curp).append(" | Celular: ").append(celular).append("\n");
         
-        return String.format("Cliente: %s | CURP: %s | Celular: %s\n%s", nombre, curp, celular, cuentasString);
+        // Iteramos sobre las cuentas almacenadas en el HashMap para agregarlas a la cadena.
+        for (Cuenta cuenta : cuentasMap.values()) {
+            sb.append(cuenta.toString()).append("\n");
+        }
+        return sb.toString();
     }
 }
